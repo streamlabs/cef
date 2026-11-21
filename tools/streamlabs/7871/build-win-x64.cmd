@@ -23,7 +23,7 @@ set "DEPOT_TOOLS_UPDATE=0"
 set "CEF_USE_GN=1"
 set "GYP_MSVS_VERSION=2026"
 set "GN_OUT_CONFIGS=Release_GN_x64"
-set "GN_DEFINES=is_debug=false is_official_build=false symbol_level=1 dcheck_always_on=false dcheck_is_configurable=false proprietary_codecs=true ffmpeg_branding=Chrome"
+set "GN_DEFINES=is_debug=false is_official_build=false symbol_level=1 dcheck_always_on=false dcheck_is_configurable=false proprietary_codecs=true ffmpeg_branding=Chrome enable_backup_ref_ptr_instance_tracer=false"
 set "GIT_TERMINAL_PROMPT=0"
 set "GCM_INTERACTIVE=Never"
 if not defined CEF_JOBS set "CEF_JOBS=8"
@@ -42,12 +42,19 @@ if /I not "%ACTUAL%"=="%CEF_PIN%" (echo CEF checkout does not match pinned revis
 for /f %%H in ('git -C "%SRC%" rev-parse HEAD') do set "ACTUAL=%%H"
 if /I not "%ACTUAL%"=="%CHROMIUM_PIN%" (echo Chromium checkout does not match pinned revision.>&2 & exit /b 1)
 if /I "%~2"=="--resume" goto build
+set "TRACER_PATCH=%~dp0allow-instance-tracer-override.patch"
+call git -C "%CEF%" apply --reverse --check "%TRACER_PATCH%" >nul 2>&1
+if errorlevel 1 (
+  call git -C "%CEF%" apply "%TRACER_PATCH%" || exit /b 1
+)
 pushd "%CEF%" || exit /b 1
 call "%DEPOT%\python3.bat" tools\gclient_hook.py
 set "RC=%errorlevel%"
 popd
 if not "%RC%"=="0" exit /b %RC%
 :build
+call "%DEPOT%\python3.bat" "%~dp0check-win-x64-args.py" "%SRC%"
+if errorlevel 1 exit /b 1
 pushd "%SRC%" || exit /b 1
 call autoninja -j %CEF_JOBS% -C out\Release_GN_x64 cefclient bootstrap bootstrapc
 set "RC=%errorlevel%"

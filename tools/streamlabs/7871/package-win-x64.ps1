@@ -1,6 +1,6 @@
 param(
   [Parameter(Mandatory)][string]$WorkRoot,
-  [string]$PackageName = 'cef_binary_7871_windows_x64_v3',
+  [string]$PackageName = 'cef_binary_7871_windows_x64_v4',
   [string]$SevenZip = '7z',
   [string]$LibExe = 'lib.exe',
   [string]$Symchk = 'symchk.exe'
@@ -33,10 +33,6 @@ foreach ($path in @($stage, $symbols, $wrapperBuild, $package, $zip, $symbols7z,
 }
 Require-File (Join-Path $cef 'tools/make_distrib.py')
 Require-File (Join-Path $out 'args.gn')
-$gnArgs = Get-Content -LiteralPath (Join-Path $out 'args.gn') -Raw
-foreach ($setting in @('is_debug=false','is_official_build=false','symbol_level=1','proprietary_codecs=true','ffmpeg_branding="Chrome"','dcheck_always_on=false','dcheck_is_configurable=false','target_cpu="x64"')) {
-  if (-not $gnArgs.Contains($setting)) { throw "GN args do not include $setting" }
-}
 $expected = @{ cef='abc1ece6a66997894c4c953ed24937603fbd74b4'; chromium='e7b998fb3cd79ff00dbc0067421dc6ec118892a8'; depot='f4fadaf6a5ba1bced9d3d9021060667b563bf583' }
 foreach ($entry in @(@($cef,$expected.cef),@($src,$expected.chromium),@((Join-Path $root 'depot_tools'),$expected.depot))) {
   $actual = (& git -C $entry[0] rev-parse HEAD).Trim()
@@ -47,6 +43,7 @@ Require-File $python
 $env:PATH = "$(Join-Path $root 'depot_tools');$env:PATH"
 $env:DEPOT_TOOLS_WIN_TOOLCHAIN = '0'
 $env:DEPOT_TOOLS_UPDATE = '0'
+Run $python @((Join-Path $PSScriptRoot 'check-win-x64-args.py'), $src)
 New-Item -ItemType Directory -Path $stageRoot,$artifacts,(Split-Path $package) -Force | Out-Null
 Push-Location $cef
 try { Run $python @('tools/make_distrib.py','--output-dir',$stageRoot,'--distrib-subdir',$PackageName,'--ninja-build','--x64-build','--allow-partial','--no-docs','--no-archive','--no-format') }
@@ -75,14 +72,16 @@ $release = Join-Path $package 'Release'
 foreach ($required in @('bootstrap.exe','bootstrapc.exe','chrome_elf.dll','libcef.dll','libcef.lib')) {
   Require-File (Join-Path $release $required)
 }
+foreach ($name in @('bootstrap.exe.pdb','bootstrapc.exe.pdb','chrome_elf.dll.pdb','dxcompiler.dll.pdb',
+                    'libcef.dll.pdb','libEGL.dll.pdb','libGLESv2.dll.pdb','vk_swiftshader.dll.pdb','vulkan-1.dll.pdb')) {
+  Require-File (Join-Path $symbols $name)
+}
 $pdbs = @(Get-ChildItem -LiteralPath $symbols -Filter '*.pdb' -File)
-if ($pdbs.Count -lt 9) { throw "Expected at least nine Release PDBs; got $($pdbs.Count)" }
 foreach ($pdb in $pdbs) {
   $binary = Join-Path $release ($pdb.Name -replace '\.pdb$','')
   Require-File $binary
   Copy-Item -LiteralPath $pdb.FullName -Destination (Join-Path $release $pdb.Name)
 }
-Require-File (Join-Path $release 'libcef.dll.pdb')
 $symchkCommand = Get-Command $Symchk -ErrorAction SilentlyContinue
 if (-not $symchkCommand) { throw 'symchk.exe is required to verify binary/PDB identity; pass -Symchk with its full path.' }
 foreach ($pdb in $pdbs) { Run $symchkCommand.Source @('/q',(Join-Path $release ($pdb.Name -replace '\.pdb$','')),'/s',$release) }

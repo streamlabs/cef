@@ -16,9 +16,11 @@ set CEF_JOBS=8
 build-win-x64.cmd D:\cef-work
 ```
 
-The build runs `automate-git.py`, CEF's GN hook, and `autoninja` for `cefclient bootstrap bootstrapc` in `Release_GN_x64`. To switch an existing pinned checkout to VS 2026, run `build-win-x64.cmd D:\cef-work --reconfigure`; it regenerates GN files without syncing sources. For an interrupted build, run `build-win-x64.cmd D:\cef-work --resume`. Generated GN args must include Release, `symbol_level=1`, `proprietary_codecs=true`, `ffmpeg_branding="Chrome"`, disabled Release DCHECKs, and x64; the packaging script checks `args.gn` before doing any work.
+To upgrade an existing v3 checkout, run `build-win-x64.cmd D:\cef-work --reconfigure`. The script applies the included GN generator patch to the pinned CEF checkout, regenerates `out/Release_GN_x64/args.gn`, and rebuilds `cefclient bootstrap bootstrapc`. CEF 7871 normally forces pointer-instance tracing on for this Windows configuration. V4 sets `enable_backup_ref_ptr_instance_tracer=false` because the tracer can deadlock during browser startup.
 
-From a VS 2026 x64 developer command prompt with PowerShell 7 and CMake 4.2 or later, package the existing Release build. The default package name is `cef_binary_7871_windows_x64_v3`, corresponding to Windows x64 revision `3` in the OBS preset.
+To continue an interrupted v4 build, run `build-win-x64.cmd D:\cef-work --resume`. Both build modes and the packager check the generated args, including `proprietary_codecs=true` and `ffmpeg_branding="Chrome"` for H.264/AAC and `symbol_level=1` for crash symbols.
+
+After the v4 build completes, package it from a VS 2026 x64 developer command prompt with PowerShell 7 and CMake 4.2 or later. The default package name is `cef_binary_7871_windows_x64_v4`. Use Windows x64 revision `4` when pinning this package in OBS.
 
 ```powershell
 pwsh -NoProfile -File .\package-win-x64.ps1 -WorkRoot D:\cef-work
