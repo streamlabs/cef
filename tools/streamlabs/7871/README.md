@@ -1,6 +1,6 @@
 # CEF 7871 Windows x64 build
 
-Builds the OBS Project CEF 7871 branch with VS 2026 and packages a Release runtime with matching PDBs and a self-contained `/MT` wrapper. The source pins match the earlier VS 2022 [v1 build](BUILD-PROVENANCE-v1.md); the completed VS 2026 package is recorded in [v2 provenance](BUILD-PROVENANCE-v2.md). A new build gets new hashes; do not reuse a recorded artifact hash.
+Builds the OBS Project CEF 7871 branch with VS 2026 and packages a Release runtime with matching PDBs and a self-contained `/MT` wrapper. The source pins match the earlier VS 2022 [v1 build](BUILD-PROVENANCE-v1.md); the completed VS 2026 packages are recorded in [v2 provenance](BUILD-PROVENANCE-v2.md) and [v4 provenance](BUILD-PROVENANCE-v4.md). A new build gets new hashes; do not reuse a recorded artifact hash.
 
 | Repository | Revision |
 | --- | --- |
