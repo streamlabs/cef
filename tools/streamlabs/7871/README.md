@@ -10,6 +10,8 @@ Builds the OBS Project CEF 7871 branch with VS 2026 and packages a Release runti
 
 Use Windows x64, VS 2026 C++ tools, a suitable Windows SDK with `symchk.exe`, Git with long paths enabled, Python/depot_tools prerequisites, 7-Zip, and ample disk space. Install depot_tools at `<work>\depot_tools` and checkout its pin; clone CEF at `<work>\cef` and checkout its pin. The script syncs Chromium from the GitHub mirror and checks all three resulting HEADs. Set `VSDEVCMD` if VS is installed in a different edition/location, `CEF_JOBS` to cap parallel compilation, and `GIT_USR_BIN` if Git's Unix tools are not on `PATH`. The build and packaging scripts never change an existing pin themselves.
 
+The build script applies `allow-empty-gclient-condition.patch` to the pinned depot_tools checkout before syncing `.289`. It handles an empty variable in the Chromium dependency conditions; without it, `gclient sync` fails with `SyntaxError: invalid syntax`. The patch is idempotent and leaves the depot_tools commit pin unchanged.
+
 ```cmd
 set VSDEVCMD=C:\path\to\VS2026\Common7\Tools\VsDevCmd.bat
 set CEF_JOBS=8

@@ -1,0 +1,13 @@
+diff --git a/gclient_eval.py b/gclient_eval.py
+index e222d501..bf09c764 100644
+--- a/gclient_eval.py
++++ b/gclient_eval.py
+@@ -614,6 +614,8 @@ def Parse(content, filename, vars_override=None, builtin_vars=None):
+ 
+ def EvaluateCondition(condition, variables, referenced_variables=None):
+     """Safely evaluates a boolean condition. Returns the result."""
++    if condition == '':
++        return ''
+     if not referenced_variables:
+         referenced_variables = set()
+     _allowed_names = {'None': None, 'True': True, 'False': False}

@@ -29,6 +29,11 @@ set "GCM_INTERACTIVE=Never"
 if not defined CEF_JOBS set "CEF_JOBS=8"
 for /f %%H in ('git -C "%DEPOT%" rev-parse HEAD') do set "ACTUAL=%%H"
 if /I not "%ACTUAL%"=="%DEPOT_PIN%" (echo depot_tools checkout does not match pinned revision.>&2 & exit /b 1)
+set "GCLIENT_PATCH=%~dp0allow-empty-gclient-condition.patch"
+call git -C "%DEPOT%" apply --reverse --check "%GCLIENT_PATCH%" >nul 2>&1
+if errorlevel 1 (
+  call git -C "%DEPOT%" apply "%GCLIENT_PATCH%" || exit /b 1
+)
 if /I "%~2"=="--resume" goto check_pins
 if /I "%~2"=="--reconfigure" goto check_pins
 if not exist "%ROOT%\cef\tools\automate\automate-git.py" (echo Clone streamlabs/cef at %CEF_PIN% into "%ROOT%\cef".>&2 & exit /b 2)
