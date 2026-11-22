@@ -34,7 +34,7 @@ if /I "%~2"=="--reconfigure" goto check_pins
 if not exist "%ROOT%\cef\tools\automate\automate-git.py" (echo Clone streamlabs/cef at %CEF_PIN% into "%ROOT%\cef".>&2 & exit /b 2)
 for /f %%H in ('git -C "%ROOT%\cef" rev-parse HEAD') do set "ACTUAL=%%H"
 if /I not "%ACTUAL%"=="%CEF_PIN%" (echo CEF seed checkout does not match pinned revision.>&2 & exit /b 1)
-call "%DEPOT%\python3.bat" "%ROOT%\cef\tools\automate\automate-git.py" --download-dir="%ROOT%\download" --depot-tools-dir="%DEPOT%" --url=https://github.com/streamlabs/cef.git --branch=7871 --checkout=%CEF_PIN% --chromium-checkout=refs/tags/150.0.7871.289 --chromium-url=https://github.com/chromium/chromium.git --force-config --no-chromium-history --no-depot-tools-update --force-patch-update --x64-build --no-build --no-distrib
+call "%DEPOT%\python3.bat" "%ROOT%\cef\tools\automate\automate-git.py" --download-dir="%ROOT%\download" --depot-tools-dir="%DEPOT%" --url=https://github.com/streamlabs/cef.git --branch=7871 --checkout=%CEF_PIN% --chromium-checkout=refs/tags/150.0.7871.289 --chromium-url=https://github.com/chromium/chromium.git --force-config --no-depot-tools-update --force-patch-update --x64-build --no-build --no-distrib
 if errorlevel 1 exit /b 1
 :check_pins
 for /f %%H in ('git -C "%CEF%" rev-parse HEAD') do set "ACTUAL=%%H"
