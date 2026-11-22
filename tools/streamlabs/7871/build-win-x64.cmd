@@ -6,8 +6,8 @@ set "ROOT=%~f1"
 set "DEPOT=%ROOT%\depot_tools"
 set "SRC=%ROOT%\download\chromium\src"
 set "CEF=%SRC%\cef"
-set "CEF_PIN=abc1ece6a66997894c4c953ed24937603fbd74b4"
-set "CHROMIUM_PIN=e7b998fb3cd79ff00dbc0067421dc6ec118892a8"
+set "CEF_PIN=ed595aef8b4bf219b5e5fb1c9f600e756bef3019"
+set "CHROMIUM_PIN=a6596a78725d07cf518fe958ac8fd18788530749"
 set "DEPOT_PIN=f4fadaf6a5ba1bced9d3d9021060667b563bf583"
 if not defined VSDEVCMD set "VSDEVCMD=%ProgramFiles%\Microsoft Visual Studio\18\Community\Common7\Tools\VsDevCmd.bat"
 if not exist "%VSDEVCMD%" (echo Set VSDEVCMD to the Visual Studio 2026 VsDevCmd.bat path.>&2 & exit /b 2)
@@ -31,10 +31,10 @@ for /f %%H in ('git -C "%DEPOT%" rev-parse HEAD') do set "ACTUAL=%%H"
 if /I not "%ACTUAL%"=="%DEPOT_PIN%" (echo depot_tools checkout does not match pinned revision.>&2 & exit /b 1)
 if /I "%~2"=="--resume" goto check_pins
 if /I "%~2"=="--reconfigure" goto check_pins
-if not exist "%ROOT%\cef\tools\automate\automate-git.py" (echo Clone obsproject/cef at %CEF_PIN% into "%ROOT%\cef".>&2 & exit /b 2)
+if not exist "%ROOT%\cef\tools\automate\automate-git.py" (echo Clone streamlabs/cef at %CEF_PIN% into "%ROOT%\cef".>&2 & exit /b 2)
 for /f %%H in ('git -C "%ROOT%\cef" rev-parse HEAD') do set "ACTUAL=%%H"
 if /I not "%ACTUAL%"=="%CEF_PIN%" (echo CEF seed checkout does not match pinned revision.>&2 & exit /b 1)
-call "%DEPOT%\python3.bat" "%ROOT%\cef\tools\automate\automate-git.py" --download-dir="%ROOT%\download" --depot-tools-dir="%DEPOT%" --url=https://github.com/obsproject/cef.git --branch=7871 --checkout=%CEF_PIN% --chromium-checkout=refs/tags/150.0.7871.287 --chromium-url=https://github.com/chromium/chromium.git --force-config --no-chromium-history --no-depot-tools-update --force-patch-update --x64-build --no-build --no-distrib
+call "%DEPOT%\python3.bat" "%ROOT%\cef\tools\automate\automate-git.py" --download-dir="%ROOT%\download" --depot-tools-dir="%DEPOT%" --url=https://github.com/streamlabs/cef.git --branch=7871 --checkout=%CEF_PIN% --chromium-checkout=refs/tags/150.0.7871.289 --chromium-url=https://github.com/chromium/chromium.git --force-config --no-chromium-history --no-depot-tools-update --force-patch-update --x64-build --no-build --no-distrib
 if errorlevel 1 exit /b 1
 :check_pins
 for /f %%H in ('git -C "%CEF%" rev-parse HEAD') do set "ACTUAL=%%H"

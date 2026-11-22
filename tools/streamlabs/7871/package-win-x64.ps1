@@ -1,6 +1,6 @@
 param(
   [Parameter(Mandatory)][string]$WorkRoot,
-  [string]$PackageName = 'cef_binary_7871_windows_x64_v4',
+  [string]$PackageName = 'cef_binary_7871_windows_x64_v5',
   [string]$SevenZip = '7z',
   [string]$LibExe = 'lib.exe',
   [string]$Symchk = 'symchk.exe'
@@ -33,7 +33,7 @@ foreach ($path in @($stage, $symbols, $wrapperBuild, $package, $zip, $symbols7z,
 }
 Require-File (Join-Path $cef 'tools/make_distrib.py')
 Require-File (Join-Path $out 'args.gn')
-$expected = @{ cef='abc1ece6a66997894c4c953ed24937603fbd74b4'; chromium='e7b998fb3cd79ff00dbc0067421dc6ec118892a8'; depot='f4fadaf6a5ba1bced9d3d9021060667b563bf583' }
+$expected = @{ cef='ed595aef8b4bf219b5e5fb1c9f600e756bef3019'; chromium='a6596a78725d07cf518fe958ac8fd18788530749'; depot='f4fadaf6a5ba1bced9d3d9021060667b563bf583' }
 foreach ($entry in @(@($cef,$expected.cef),@($src,$expected.chromium),@((Join-Path $root 'depot_tools'),$expected.depot))) {
   $actual = (& git -C $entry[0] rev-parse HEAD).Trim()
   if ($LASTEXITCODE -ne 0 -or $actual -ne $entry[1]) { throw "Revision mismatch: $($entry[0])" }
