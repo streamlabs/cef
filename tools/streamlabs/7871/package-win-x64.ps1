@@ -40,6 +40,15 @@ foreach ($entry in @(@($cef,$expected.cef),@($src,$expected.chromium),@((Join-Pa
 }
 $python = Join-Path $root 'depot_tools/python3.bat'
 Require-File $python
+$vsCmake = if ($env:VSINSTALLDIR) {
+  Join-Path $env:VSINSTALLDIR 'Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe'
+}
+$cmake = if ($vsCmake -and (Test-Path -LiteralPath $vsCmake -PathType Leaf)) { $vsCmake } else { 'cmake' }
+$cmakeVersion = (& $cmake --version | Select-Object -First 1)
+if ($LASTEXITCODE -ne 0 -or $cmakeVersion -notmatch '^cmake version ([0-9]+)\.([0-9]+)' -or
+    [int]$Matches[1] -lt 4 -or ([int]$Matches[1] -eq 4 -and [int]$Matches[2] -lt 2)) {
+  throw "CMake 4.2 or later is required for Visual Studio 2026 (found: $cmakeVersion)."
+}
 $env:PATH = "$(Join-Path $root 'depot_tools');$env:PATH"
 $env:DEPOT_TOOLS_WIN_TOOLCHAIN = '0'
 $env:DEPOT_TOOLS_UPDATE = '0'
@@ -51,7 +60,7 @@ finally { Pop-Location }
 if (-not (Test-Path -LiteralPath $stage -PathType Container)) { throw 'make_distrib did not create the distribution' }
 if (-not (Test-Path -LiteralPath $symbols -PathType Container)) { throw 'make_distrib did not create Release symbols' }
 
-Run cmake @('-S', (Join-Path $PSScriptRoot 'wrapper'), '-B', $wrapperBuild,
+Run $cmake @('-S', (Join-Path $PSScriptRoot 'wrapper'), '-B', $wrapperBuild,
             '-G', 'Visual Studio 18 2026', '-A', 'x64', '-T', 'v145', "-DCEF_ROOT:PATH=$stage",
             '-DCEF_RUNTIME_LIBRARY_FLAG:STRING=/MT', '-DCEF_DEBUG_INFO_FLAG:STRING=/Zi')
 Run cmake @('--build', $wrapperBuild, '--config', 'Release', '--target', 'check-wrapper')

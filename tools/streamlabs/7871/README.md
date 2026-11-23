@@ -1,6 +1,6 @@
 # CEF 7871 Windows x64 build
 
-Builds the OBS Project CEF 7871 branch with VS 2026 and packages a Release runtime with matching PDBs and a self-contained `/MT` wrapper. The source includes upstream CEF's Chromium 150.0.7871.289 update on top of OBS's `7871_obsproject` branch. Earlier packages are recorded in [v1 provenance](BUILD-PROVENANCE-v1.md), [v2 provenance](BUILD-PROVENANCE-v2.md), and [v4 provenance](BUILD-PROVENANCE-v4.md). A new build gets new hashes; do not reuse a recorded artifact hash.
+Builds the OBS Project CEF 7871 branch with VS 2026 and packages a Release runtime with matching PDBs and a self-contained `/MT` wrapper. The source includes upstream CEF's Chromium 150.0.7871.289 update on top of OBS's `7871_obsproject` branch. Completed packages are recorded in [v1 provenance](BUILD-PROVENANCE-v1.md), [v2 provenance](BUILD-PROVENANCE-v2.md), [v4 provenance](BUILD-PROVENANCE-v4.md), and [v5 provenance](BUILD-PROVENANCE-v5.md). A new build gets new hashes; do not reuse a recorded artifact hash.
 
 | Repository | Revision |
 | --- | --- |
@@ -22,7 +22,7 @@ To upgrade an existing checkout after syncing the new CEF and Chromium pins, run
 
 To continue an interrupted v5 build, run `build-win-x64.cmd D:\cef-work --resume`. Both build modes and the packager check the generated args, including `proprietary_codecs=true` and `ffmpeg_branding="Chrome"` for H.264/AAC and `symbol_level=1` for crash symbols.
 
-After the v5 build completes, package it from a VS 2026 x64 developer command prompt with PowerShell 7 and CMake 4.2 or later. The default package name is `cef_binary_7871_windows_x64_v5`. Use Windows x64 revision `5` when pinning this package in OBS.
+After the v5 build completes, package it from a VS 2026 x64 developer command prompt with PowerShell 7 and CMake 4.2 or later. The script selects VS 2026's bundled CMake when available, even if an older system CMake is first on `PATH`. The default package name is `cef_binary_7871_windows_x64_v5`. Use Windows x64 revision `5` when pinning this package in OBS.
 
 ```powershell
 pwsh -NoProfile -File .\package-win-x64.ps1 -WorkRoot D:\cef-work
