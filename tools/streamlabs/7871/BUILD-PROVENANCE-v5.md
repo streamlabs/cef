@@ -20,4 +20,11 @@ OBS constructs `cef_binary_VERSION_windows_ARCH_vREVISION.zip`; revision `5` yie
 
 The packaging script built the `/MT` wrapper and linked its `std::vector` consumer check, validated nine runtime binary/PDB identities with `symchk`, and passed `7z t` for both archives. The runtime ZIP contains 1,389 files. The package header reports Chromium `150.0.7871.289`.
 
-The artifacts are local. Hosted S3 byte and hash verification, OBS/OSN builds against v5, and packaged sandboxed startup and elevated Windows Graphics Capture checks remain to be completed.
+## Local consumer validation
+
+- OBS PR #804's checkout selected revision 5 and the local ZIP hash above. A full Windows x64 `RelWithDebInfo` build passed with VS 2026; `obs-browser.dll` and `obs-browser-child.dll` linked. Runtime and Development installed into `obs-studio-node/build/libobs-src`. The installed `libcef.dll`, `chrome_elf.dll`, and `bootstrapc.exe` match the v5 package by SHA-256.
+- OBS native CTest passed 181/183. The two failures match the v4 managed-worker path checks: temporary drive mapping and a missing UNC share returning access denied instead of file not found.
+- OSN PR #1855's checkout built and installed against the v5 OBS SDK. The installed `obs64.exe` matches v5 `bootstrapc.exe`; its `chrome_elf.dll` and `libcef.dll` match the package. Focused CEF and token-policy tests passed 9/9. The full OSN native suite passed 233/234; the same v4 fixture test fails because `config_save_safe` returns `-2` when saving its config.
+- OBS's broad build needed a generated OpenVR update script to skip an unnecessary Git submodule command on this worker. The change is local to the build tree and is not in the OBS PR.
+
+The artifacts are local. Hosted S3 byte and hash verification, OBS PR #804's revision 5 update, and packaged sandboxed startup and elevated Windows Graphics Capture checks remain to be completed.
