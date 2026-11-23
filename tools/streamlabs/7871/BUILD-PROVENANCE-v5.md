@@ -27,4 +27,9 @@ The packaging script built the `/MT` wrapper and linked its `std::vector` consum
 - OSN PR #1855's checkout built and installed against the v5 OBS SDK. The installed `obs64.exe` matches v5 `bootstrapc.exe`; its `chrome_elf.dll` and `libcef.dll` match the package. Focused CEF and token-policy tests passed 9/9. The full OSN native suite passed 233/234; the same v4 fixture test fails because `config_save_safe` returns `-2` when saving its config.
 - OBS's broad build needed a generated OpenVR update script to skip an unnecessary Git submodule command on this worker. The change is local to the build tree and is not in the OBS PR.
 
-The artifacts are local. Hosted S3 byte and hash verification, OBS PR #804's revision 5 update, and packaged sandboxed startup and elevated Windows Graphics Capture checks remain to be completed.
+Both hosted S3 objects were streamed in full; their byte counts and SHA-256 hashes match the local artifacts above.
+
+- Runtime: `https://streamlabs-cef-dist.s3.us-west-2.amazonaws.com/cef_binary_7871_windows_x64_v5.zip`
+- Symbols: `https://streamlabs-cef-dist.s3.us-west-2.amazonaws.com/cef_binary_7871_windows_x64_v5_symbols.7z`
+
+OBS PR #804 selects revision `5` and the runtime hash above. Packaged sandboxed startup and elevated Windows Graphics Capture checks remain to be completed on a normal application host.
