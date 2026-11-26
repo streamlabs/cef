@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 4.2)
+project(cef_wrapper_package LANGUAGES C CXX)
+
+set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded)
+list(APPEND CMAKE_MODULE_PATH "${CEF_ROOT}/cmake")
+find_package(CEF REQUIRED)
+add_subdirectory("${CEF_LIBCEF_DLL_WRAPPER_PATH}" libcef_dll_wrapper)
+set_target_properties(libcef_dll_wrapper PROPERTIES COMPILE_PDB_NAME libcef_dll_wrapper)
+
+add_executable(check-wrapper check-wrapper.cpp)
+target_compile_features(check-wrapper PRIVATE cxx_std_20)
+target_compile_definitions(check-wrapper PRIVATE NOMINMAX)
+target_include_directories(check-wrapper PRIVATE "${CEF_ROOT}")
+target_link_libraries(check-wrapper PRIVATE libcef_dll_wrapper "${CEF_LIB_RELEASE}" ${CEF_STANDARD_LIBS})
+target_link_options(check-wrapper PRIVATE /DEBUG:FULL /WX:4099)

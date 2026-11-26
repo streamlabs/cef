@@ -1,0 +1,11 @@
+diff --git a/tools/gn_args.py b/tools/gn_args.py
+--- a/tools/gn_args.py
++++ b/tools/gn_args.py
+@@ -592,5 +592,6 @@ def GetConfigArgs(args, is_debug, cpu):
+         # Use a global table to track all live raw_ptr/raw_ref instances to help
+         # debug dangling pointers. This requires PA-E.
+-        add_args['enable_backup_ref_ptr_instance_tracer'] = True
++        add_args['enable_backup_ref_ptr_instance_tracer'] = args.get(
++            'enable_backup_ref_ptr_instance_tracer', True)
+
+     # Disable GWP-ASAN on macOS Debug builds to avoid static initialization
